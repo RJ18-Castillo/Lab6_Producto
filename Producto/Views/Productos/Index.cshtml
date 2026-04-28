@@ -1,5 +1,41 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model IEnumerable<global::Producto.Models.Producto>
+
+<h2>Lista de Productos</h2>
+
+<a asp-action="Create" class="btn btn-primary">Agregar Producto</a>
+
+@if (!Model.Any())
+{
+    <p>No hay productos registrados.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>₡ @item.Precio</td>
+                    <td>@item.Categoria</td>
+                    <td>@item.FechaIngreso.ToShortDateString()</td>
+                    <td>@(item.Activo ? "Activo" : "Inactivo")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
