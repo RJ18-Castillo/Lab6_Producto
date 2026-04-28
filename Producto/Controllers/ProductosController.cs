@@ -1,83 +1,84 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Producto.Models;
+using Producto.Repositories;
 
 namespace Producto.Controllers
 {
     public class ProductosController : Controller
     {
-        // GET: ProductosController
-        public ActionResult Index()
+        private readonly IProductoRepository _repo;
+
+        public ProductosController(IProductoRepository repo)
+        {
+            _repo = repo;
+        }
+
+        // GET: Productos
+        public IActionResult Index()
+        {
+            var productos = _repo.ObtenerTodos();
+            return View(productos);
+        }
+
+        // GET: Create
+        public IActionResult Create()
         {
             return View();
         }
 
-        // GET: ProductosController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: ProductosController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ProductosController/Create
+        // POST: Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(Producto.Models.Producto p)
         {
-            try
+            if (ModelState.IsValid)
             {
+                _repo.Agregar(p);
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(p);
         }
 
-        // GET: ProductosController/Edit/5
-        public ActionResult Edit(int id)
+        // GET: Edit
+        public IActionResult Edit(int id)
         {
-            return View();
+            var producto = _repo.ObtenerPorId(id);
+            if (producto == null)
+                return NotFound();
+
+            return View(producto);
         }
 
-        // POST: ProductosController/Edit/5
+        // POST: Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Edit(Producto.Models.Producto p)
         {
-            try
+            if (ModelState.IsValid)
             {
+                _repo.Actualizar(p);
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(p);
         }
 
-        // GET: ProductosController/Delete/5
-        public ActionResult Delete(int id)
+        // GET: Delete
+        public IActionResult Delete(int id)
         {
-            return View();
+            var producto = _repo.ObtenerPorId(id);
+            if (producto == null)
+                return NotFound();
+
+            return View(producto);
         }
 
-        // POST: ProductosController/Delete/5
-        [HttpPost]
+        // POST: Delete
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult DeleteConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _repo.Eliminar(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
